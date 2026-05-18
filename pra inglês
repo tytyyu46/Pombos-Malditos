@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Inglês - Sessões de 10 Perguntas</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --primary-color: #3498db;
+            --success-color: #2ecc71;
+            --error-color: #e74c3c;
+            --accent-color: #e67e22;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .quiz-container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 550px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-top: 0;
+            font-size: 1.3rem;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .btn-option {
+            background-color: #fff;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .btn-option:hover:not(:disabled) {
+            border-color: var(--primary-color);
+            background-color: #f8fafc;
+        }
+
+        .correct {
+            background-color: var(--success-color) !important;
+            border-color: var(--success-color) !important;
+            color: white !important;
+        }
+
+        .incorrect {
+            background-color: var(--error-color) !important;
+            border-color: var(--error-color) !important;
+            color: white !important;
+        }
+
+        .btn-hint {
+            background-color: transparent;
+            border: none;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-style: italic;
+            font-size: 0.95rem;
+            text-decoration: underline;
+        }
+
+        .btn-hint:disabled {
+            color: #bdc3c7;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        .hint-text {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            display: none;
+            background: #fef5ec;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .status-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+
+        .audio-control {
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            color: #95a5a6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .select-music {
+            padding: 4px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+            font-size: 0.8rem;
+            color: var(--text-color);
+            background-color: #fff;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Elemento de áudio central -->
+<audio id="bg-music" loop>
+    <source id="audio-source" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mp3">
+</audio>
+
+<div class="quiz-container" id="quiz">
+    <div class="audio-control">
+        <span>🎵 <b>Trilha Sonora:</b></span>
+        <select class="select-music" id="music-selector" onchange="mudarMusicaEspecifica(this.value)">
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3">Trilha 1 - Clássica Soft</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3">Trilha 2 - Animada / Synth</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">Trilha 3 - Chillout Beats</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3">Trilha 4 - Groove Eletrônico</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3">Trilha 5 - Relaxing Lounge</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3">Trilha 6 - Pop Instrumental</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3">Trilha 7 - Techno sutil</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3">Trilha 8 - Ambient Guitar</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3">Trilha 9 - Modern Piano</option>
+            <option value="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-10.mp3">Trilha 10 - Cyber Funk</option>
+        </select>
+    </div>
+    
+    <div id="game-side">
+        <h2 id="question-text">Carregando pergunta...</h2>
+        
+        <div class="options-container" id="options-box"></div>
+
+        <button class="btn-hint" id="hint-btn" onclick="useHint()">💡 Precisa de uma dica? (Restam 3)</button>
+        <div class="hint-text" id="hint-box"></div>
+        
+        <div class="status-container">
+            <span id="progress-text">Pergunta: 1/10</span>
+            <span id="timer-text">Tempo: 00:00</span>
+            <span id="score-text">Pontuação: 0</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    const bancoPerguntas = [
+        { pergunta: "Como se diz a palavra 'Cachorro' em inglês?", opcoes: ["Cat", "Dog", "Bird", "Horse"], correta: "Dog", dica: "Faz 'bark' e é o melhor amigo do homem." },
+        { pergunta: "Qual é a forma correta do verbo 'to be' aqui:<br>'She ___ my best friend.'?", opcoes: ["am", "are", "is", "be"], correta: "is", dica: "Usado para a terceira pessoa do singular (he/she/it)." },
+        { pergunta: "Se alguém lhe disser 'Thank you', qual é a resposta mais comum?", opcoes: ["You're welcome", "Please", "Hello", "Goodbye"], correta: "You're welcome", dica: "Significa 'De nada'." },
+        { pergunta: "Qual destas palavras representa a cor 'Azul'?", opcoes: ["Red", "Green", "Blue", "Yellow"], correta: "Blue", dica: "É a cor do céu limpo." },
+        { pergunta: "Qual alternativa apresenta o oposto da palavra 'Hot' (quente)?", opcoes: ["Warm", "Cold", "Dry", "Big"], correta: "Cold", dica: "Como a temperatura de um cubo de gelo." },
+        { pergunta: "Como se diz 'Maçã' em inglês?", opcoes: ["Banana", "Apple", "Grape", "Orange"], correta: "Apple", dica: "A marca do iPhone leva o nome dessa fruta." },
+        { pergunta: "Qual o plural de 'Foot' (pé)?", opcoes: ["Foots", "Feet", "Feets", "Footes"], correta: "Feet", dica: "É um plural irregular; muda as vogais 'oo' para 'ee'." },
+        { pergunta: "O que significa 'Book'?", opcoes: ["Caneta", "Livro", "Caderno", "Mesa"], correta: "Livro", dica: "Você lê um 'book'." },
+        { pergunta: "Como se diz 'Obrigado' em inglês?", opcoes: ["Please", "Sorry", "Thank you", "Welcome"], correta: "Thank you", dica: "Geralmente abreviado como 'Thanks'." },
+        { pergunta: "Qual é a forma correta do verbo 'to be' para pronomes plurais (They, We)?", opcoes: ["am", "is", "are", "be"], correta: "are", dica: "Usado para 'Eles/Elas' ou 'Nós' no presente." },
+        { pergunta: "Qual é o dia da semana correspondente a 'Monday'?", opcoes: ["Segunda-feira", "Terça-feira", "Quarta-feira", "Domingo"], correta: "Segunda-feira", dica: "O primeiro dia útil da semana." },
+        { pergunta: "Como se diz 'Água' em inglês?", opcoes: ["Milk", "Juice", "Water", "Soda"], correta: "Water", dica: "Essencial para a vida, transparente." },
+        { pergunta: "Qual o significado de 'Red'?", opcoes: ["Vermelho", "Verde", "Roxo", "Rosa"], correta: "Vermelho", dica: "A cor do sangue ou do morango." },
+        { pergunta: "Como se diz 'Bom dia'?", opcoes: ["Good afternoon", "Good night", "Good morning", "Goodbye"], correta: "Good morning", dica: "Usado logo cedo quando acordamos." },
+        { pergunta: "O que significa 'Cat'?", opcoes: ["Cachorro", "Gato", "Passarinho", "Peixe"], correta: "Gato", dica: "Um felino doméstico que faz 'meow'." },
+        { pergunta: "Qual o número 'One' em português?", opcoes: ["Dois", "Dez", "Um", "Onze"], correta: "Um", dica: "O primeiríssimo número da contagem." },
+        { pergunta: "Como se diz 'Escola' em inglês?", opcoes: ["Church", "School", "Hospital", "Store"], correta: "School", dica: "Onde os alunos vão para estudar." },
+        { pergunta: "O que significa 'Goodbye'?", opcoes: ["Olá", "Por favor", "Tchau / Adeus", "De nada"], correta: "Tchau / Adeus", dica: "Usado na hora de ir embora." },
+        { pergunta: "Qual é a resposta mais comum para 'Nice to meet you'?", opcoes: ["Goodbye", "Nice to meet you too", "Thank you", "You're welcome"], correta: "Nice to meet you too", dica: "Basta adicionar o 'também' (too) ao final." },
+        { pergunta: "Qual é o oposto de 'Happy' (feliz)?", opcoes: ["Sad", "Angry", "Tired", "Excited"], correta: "Sad", dica: "Significa triste." },
+        { pergunta: "Como se diz 'Casa' em inglês?", opcoes: ["Car", "House", "Street", "City"], correta: "House", dica: "O lugar onde uma família mora." },
+        { pergunta: "Qual a tradução correta de 'Milk'?", opcoes: ["Água", "Suco", "Leite", "Café"], correta: "Leite", dica: "Bebida branca extraída da vaca." },
+        { pergunta: "Como se diz 'Caneta' em inglês?", opcoes: ["Pencil", "Pen", "Eraser", "Ruler"], correta: "Pen", dica: "Mais curta que 'pencil' (lápis)." },
+        { pergunta: "O que significa 'Sun'?", opcoes: ["Lua", "Estrela", "Sol", "Nuvem"], correta: "Sol", dica: "A estrela brilhante que ilumina o nosso dia." },
+        { pergunta: "Qual o significado do verbo 'To Run'?", opcoes: ["Andar", "Correr", "Pular", "Dançar"], correta: "Correr", dica: "O que atletas fazem em uma maratona." },
+        { pergunta: "Como se diz 'Por favor' em inglês?", opcoes: ["Sorry", "Excuse me", "Please", "Thanks"], correta: "Please", dica: "Palavra mágica usada para fazer pedidos educados." },
+        { pergunta: "Qual o número 'Ten'?", opcoes: ["Dois", "Cinco", "Dez", "Vinte"], correta: "Dez", dica: "O número total de dedos nas suas duas mãos." },
+        { pergunta: "Como se diz 'Janela' em inglês?", opcoes: ["Door", "Wall", "Floor", "Window"], correta: "Window", dica: "O famoso sistema operacional de computador tem esse nome." },
+        { pergunta: "O que significa 'Car'?", opcoes: ["Avião", "Carro", "Trem", "Bicicleta"], correta: "Carro", dica: "Veículo automotor de 4 rodas de uso diário." },
+        { pergunta: "Qual o significado de 'Green'?", opcoes: ["Azul", "Cinza", "Verde", "Amarelo"], correta: "Verde", dica: "A cor das folhas das árvores e da grama." },
+        { pergunta: "Como se diz 'Mãe' em inglês?", opcoes: ["Father", "Mother", "Brother", "Sister"], correta: "Mother", dica: "Muitas vezes carinhosamente chamada de 'Mom'." },
+        { pergunta: "Como se diz 'Pai' em inglês?", opcoes: ["Mother", "Brother", "Father", "Uncle"], correta: "Father", dica: "Muitas vezes chamado de 'Dad'." },
+        { pergunta: "O que significa 'Bread'?", opcoes: ["Queijo", "Pão", "Presunto", "Bolo"], correta: "Pão", dica: "Alimento do café da manhã feito com farinha e fermento." },
+        { pergunta: "Qual o significado do verbo 'To Sleep'?", opcoes: ["Comer", "Dormir", "Acordar", "Sonhar"], correta: "Dormir", dica: "O que fazemos à noite na cama." },
+        { pergunta: "Como se diz 'Cadeira' em inglês?", opcoes: ["Table", "Chair", "Bed", "Desk"], correta: "Chair", dica: "Móvel feito explicitamente para sentar." },
+        { pergunta: "Qual é o mês 'January' em português?", opcoes: ["Junho", "Julho", "Janeiro", "Fevereiro"], correta: "Janeiro", dica: "O primeiro mês do ano." },
+        { pergunta: "Como se diz 'Computador' em inglês?", opcoes: ["Television", "Cellphone", "Computer", "Radio"], correta: "Computer", dica: "A palavra é quase idêntica ao português." },
+        { pergunta: "O que significa 'Boy'?", opcoes: ["Homem", "Menino", "Mulher", "Menina"], correta: "Menino", dica: "Uma criança ou jovem do sexo masculino." },
+        { pergunta: "O que significa 'Girl'?", opcoes: ["Menino", "Mulher", "Homem", "Menina"], correta: "Menina", dica: "Uma criança ou jovem do sexo feminino." },
+        { pergunta: "Qual o oposto de 'Big' (Grande)?", opcoes: ["Small", "Tall", "Heavy", "Long"], correta: "Small", dica: "Significa pequeno." },
+        { pergunta: "Como se diz 'Relógio' (de pulso) em inglês?", opcoes: ["Clock", "Watch", "Time", "Ring"], correta: "Watch", dica: "É a mesma palavra usada para o verbo 'assistir'." },
+        { pergunta: "O que significa 'Fish'?", opcoes: ["Pássaro", "Peixe", "Leão", "Gato"], correta: "Peixe", dica: "Animal que vive e respira debaixo d'água." },
+        { pergunta: "Como se diz 'Mesa' em inglês?", opcoes: ["Chair", "Table", "Bed", "Sofa"], correta: "Table", dica: "Onde colocamos os pratos para comer." },
+        { pergunta: "Qual o significado de 'Yellow'?", opcoes: ["Laranja", "Rosa", "Amarelo", "Roxo"], correta: "Amarelo", dica: "A cor do Sol ou do Pikachu." },
+        { pergunta: "Como se diz 'Chuva' em inglês?", opcoes: ["Snow", "Wind", "Rain", "Sun"], correta: "Rain", dica: "Água caindo das nuvens." },
+        { pergunta: "O que significa 'Brother'?", opcoes: ["Irmão", "Irmã", "Primo", "Tio"], correta: "Irmão", dica: "Filho homem dos mesmos pais que você." },
+        { pergunta: "Como se diz 'Irmã' em inglês?", opcoes: ["Brother", "Sister", "Cousin", "Aunt"], correta: "Sister", dica: "Filha mulher dos mesmos pais que você." },
+        { pergunta: "Qual é a cor 'Black'?", opcoes: ["Branco", "Preto", "Cinza", "Marrom"], correta: "Preto", dica: "A cor da noite sem estrelas." },
+        { pergunta: "Qual é a cor 'White'?", opcoes: ["Branco", "Preto", "Azul", "Rosa"], correta: "Branco", dica: "A cor das nuvens ou da neve." },
+        { pergunta: "Como se diz 'Porta' em inglês?", opcoes: ["Window", "Wall", "Door", "Roof"], correta: "Door", dica: "Você abre para entrar em um cômodo." },
+        { pergunta: "O que significa 'Key'?", opcoes: ["Porta", "Chave", "Cadeado", "Janela"], correta: "Chave", dica: "Objeto de metal usado para trancar ou destrancar portas." },
+        { pergunta: "Como se diz 'Sapatos' em inglês?", opcoes: ["Socks", "Shoes", "Pants", "Shirts"], correta: "Shoes", dica: "Calçado usado para proteger os pés na rua." },
+        { pergunta: "Qual o significado de 'Time'?", opcoes: ["Equipe", "Tempo / Hora", "Espaço", "Clima"], correta: "Tempo / Hora", dica: "O que é medido pelo relógio." },
+        { pergunta: "Como se diz 'Professor' em inglês?", opcoes: ["Student", "Doctor", "Teacher", "Engineer"], correta: "Teacher", dica: "A pessoa que ensina na sala de aula." },
+        { pergunta: "O que significa 'Student'?", opcoes: ["Professor", "Diretor", "Estudante", "Zelador"], correta: "Estudante", dica: "Aquele que frequenta a escola para aprender." },
+        { pergunta: "Como se diz 'Onde' em inglês?", opcoes: ["What", "When", "Why", "Where"], correta: "Where", dica: "Usado para perguntar sobre localizações." },
+        { pergunta: "O que significa 'What'?", opcoes: ["Quem", "O que / Qual", "Onde", "Como"], correta: "O que / Qual", dica: "Usado na pergunta famosa: '___ is your name?'." },
+        { pergunta: "Como se diz 'Por que' (para perguntas) em inglês?", opcoes: ["Because", "Why", "Who", "How"], correta: "Why", dica: "A resposta começa com 'Because', mas a pergunta usa..." },
+        { pergunta: "Qual a tradução de 'Knife'?", opcoes: ["Garfo", "Colher", "Faca", "Prato"], correta: "Faca", dica: "O 'K' inicial é mudo. Usada para cortar carne." },
+        { pergunta: "Como se diz 'Colher' em inglês?", opcoes: ["Spoon", "Fork", "Knife", "Glass"], correta: "Spoon", dica: "O utensílio que você usa para tomar sopa." },
+        { pergunta: "O que significa 'Fork'?", opcoes: ["Colher", "Faca", "Garfo", "Prato"], correta: "Garfo", dica: "Utensílio com dentes espetar a comida." },
+        { pergunta: "Como se diz 'Avião' em inglês?", opcoes: ["Car", "Train", "Plane", "Boat"], correta: "Plane", dica: "Forma curta de 'airplane'." },
+        { pergunta: "Qual o significado de 'Bird'?", opcoes: ["Gato", "Cachorro", "Pássaro", "Peixe"], correta: "Pássaro", dica: "Animal com asas que voa e canta." },
+        { pergunta: "Como se diz 'Céu' em inglês?", opcoes: ["Sky", "Star", "Cloud", "Moon"], correta: "Sky", dica: "Onde o sol, as nuvens e a lua ficam." },
+        { pergunta: "O que significa 'Moon'?", opcoes: ["Sol", "Estrela", "Lua", "Planeta"], correta: "Lua", dica: "Brilha no céu à noite e tem fases como 'cheia'." },
+        { pergunta: "Como se diz 'Filho' em inglês?", opcoes: ["Daughter", "Son", "Child", "Baby"], correta: "Son", dica: "O descendente do sexo masculino." },
+        { pergunta: "Como se diz 'Filha' em inglês?", opcoes: ["Son", "Daughter", "Children", "Girl"], correta: "Daughter", dica: "A descendente do sexo feminino." },
+        { pergunta: "Qual o significado de 'Beautiful'?", opcoes: ["Feio", "Bonito", "Inteligente", "Alto"], correta: "Beautiful", dica: "Usado para elogiar a beleza de algo ou alguém." },
+        { pergunta: "Como se diz 'Feio' em inglês?", opcoes: ["Beautiful", "Pretty", "Ugly", "Cute"], correta: "Ugly", dica: "O antônimo direto de 'beautiful'." },
+        { pergunta: "O que significa 'Money'?", opcoes: ["Trabalho", "Dinheiro", "Tempo", "Banco"], correta: "Dinheiro", dica: "Moedas e notas usadas para comprar coisas." },
+        { pergunta: "Como se diz 'Amigo' em inglês?", opcoes: ["Enemy", "Friend", "Family", "Neighbor"], correta: "Friend", dica: "A série de TV famosa com Rachel e Ross se chama assim." },
+        { pergunta: "Qual o significado de 'New'?", opcoes: ["Velho", "Novo", "Lindo", "Rápido"], correta: "Novo", dica: "O oposto de 'old'." },
+        { pergunta: "Como se diz 'Velho' em inglês?", opcoes: ["New", "Young", "Old", "Clean"], correta: "Old", dica: "O oposto de novo ou jovem." },
+        { pergunta: "Qual a tradução de 'Bed'?", opcoes: ["Mesa", "Cadeira", "Cama", "Armário"], correta: "Cama", dica: "O móvel principal do quarto." },
+        { pergunta: "Como se diz 'Quarto' em inglês?", opcoes: ["Kitchen", "Bathroom", "Bedroom", "Living room"], correta: "Bedroom", dica: "A junção da palavra 'bed' (cama) com 'room' (cômodo)." },
+        { pergunta: "O que significa 'Kitchen'?", opcoes: ["Banheiro", "Cozinha", "Quarto", "Quintal"], correta: "Cozinha", dica: "O cômodo da casa onde a comida é preparada." },
+        { pergunta: "Como se diz 'Banheiro' em inglês?", opcoes: ["Kitchen", "Bedroom", "Bathroom", "Garage"], correta: "Bathroom", dica: "Onde fica o chuveiro e o vaso sanitário." },
+        { pergunta: "Qual o significado de 'Cold'?", opcoes: ["Quente", "Frio", "Morno", "Gelado"], correta: "Cold", dica: "Inverno é uma estação..." },
+        { pergunta: "Como se diz 'Verão' em inglês?", opcoes: ["Winter", "Spring", "Summer", "Autumn"], correta: "Summer", dica: "Estação do sol, praia e calor." },
+        { pergunta: "Qual é a estação 'Winter'?", opcoes: ["Primavera", "Verão", "Outono", "Inverno"], correta: "Inverno", dica: "A estação mais fria do ano." },
+        { pergunta: "O que significa 'Tree'?", opcoes: ["Três", "Árvore", "Terra", "Flor"], correta: "Tree", dica: "Tem tronco, folhas e às vezes dá frutos." },
+        { pergunta: "Como se diz 'Flor' em inglês?", opcoes: ["Tree", "Leaf", "Flower", "Grass"], correta: "Flower", dica: "A rosa e o girassol são tipos de..." },
+        { pergunta: "Qual o significado de 'To Eat'?", opcoes: ["Beber", "Comer", "Cozinhar", "Comprar"], correta: "To Eat", dica: "Ação realizada quando estamos com fome." },
+        { pergunta: "Como se diz 'Beber' em inglês?", opcoes: ["Eat", "Drink", "Cook", "Wash"], correta: "Drink", dica: "Ação de ingerir líquidos." },
+        { pergunta: "O que significa 'Paper'?", opcoes: ["Caneta", "Papel", "Livro", "Tesoura"], correta: "Paper", dica: "Folha usada para escrever ou desenhar." },
+        { pergunta: "Como se diz 'Cidade' em inglês?", opcoes: ["Country", "City", "State", "Street"], correta: "City", dica: "Nova York, Tóquio e São Paulo são exemplos." },
+        { pergunta: "Qual a tradução de 'Country'?", opcoes: ["Cidade", "País / Campo", "Estado", "Planeta"], correta: "Country", dica: "O Brasil é um 'country', e também refere-se ao interior." },
+        { pergunta: "Como se diz 'Mão' em inglês?", opcoes: ["Foot", "Arm", "Hand", "Leg"], correta: "Hand", dica: "Fica no fim do braço e tem 5 dedos." },
+        { pergunta: "O que significa 'Foot'?", opcoes: ["Mão", "Pé", "Cabeça", "Dedo"], correta: "Foot", dica: "Parte do corpo usada para chutar uma bola." },
+        { pergunta: "Como se diz 'Cabeça' em inglês?", opcoes: ["Head", "Hair", "Face", "Neck"], correta: "Head", dica: "Onde fica o cérebro, os olhos e o cabelo." },
+        { pergunta: "Qual o significado de 'Hair'?", opcoes: ["Olho", "Cabelo", "Orelha", "Nariz"], correta: "Hair", dica: "Cresce no topo da cabeça." },
+        { pergunta: "Como se diz 'Olho' em inglês?", opcoes: ["Ear", "Nose", "Eye", "Mouth"], correta: "Eye", dica: "Órgão da visão. Pronuncia-se igual à letra 'I'." },
+        { pergunta: "O que significa 'Mouth'?", opcoes: ["Nariz", "Boca", "Dente", "Língua"], correta: "Mouth", dica: "Parte do rosto usada para falar e comer." },
+        { pergunta: "Como se diz 'Sorvete' em inglês?", opcoes: ["Cake", "Chocolate", "Ice cream", "Candy"], correta: "Ice cream", dica: "Sobremesa gelada de massa." },
+        { pergunta: "Qual o significado do adjetivo 'Rich'?", opcoes: ["Pobre", "Rico", "Forte", "Fraco"], correta: "Rich", dica: "Quem tem muito dinheiro." },
+        { pergunta: "Como se diz 'Pobre' em inglês?", opcoes: ["Rich", "Poor", "Cheap", "Expensive"], correta: "Poor", dica: "O oposto de 'rich'." },
+        { pergunta: "O que significa 'Cheap'?", opcoes: ["Caro", "Barato", "Pesado", "Leve"], correta: "Cheap", dica: "Algo que custa pouco dinheiro." },
+        { pergunta: "Como se diz 'Caro' (custo alto) em inglês?", opcoes: ["Cheap", "Free", "Expensive", "Large"], correta: "Expensive", dica: "O oposto de 'cheap'." },
+        { pergunta: "Qual o significado de 'Store'?", opcoes: ["Escola", "Loja", "Praia", "Parque"], correta: "Store", dica: "Estabelecimento comercial onde compramos coisas." },
+        { pergunta: "Como se diz 'Comprar' em inglês?", opcoes: ["Sell", "Buy", "Pay", "Cost"], correta: "Buy", dica: "Ação de adquirir um produto pagando por ele." },
+        { pergunta: "O que significa o verbo 'To Sell'?", opcoes: ["Comprar", "Vender", "Alugar", "Trocar"], correta: "To Sell", dica: "O oposto de 'buy'." },
+        { pergunta: "Como se diz 'Cachorro-quente' em inglês?", opcoes: ["Hamburger", "Hot dog", "Sandwich", "Pizza"], correta: "Hot dog", dica: "A tradução literal é exatamente o nome do prato." },
+        { pergunta: "Qual o significado de 'Milkshake'?", opcoes: ["Suco de fruta", "Bebida de leite batido", "Café gelado", "Chá"], correta: "Milkshake", dica: "Leite batido geralmente com sorvete e calda." },
+        { pergunta: "Como se diz 'Bicicleta' em inglês?", opcoes: ["Car", "Motorcycle", "Bicycle / Bike", "Bus"], correta: "Bicycle / Bike", dica: "Veículo de duas rodas movido a pedal." },
+        { pergunta: "O que significa 'Bus'?", opcoes: ["Trem", "Ônibus", "Metrô", "Táxi"], correta: "Bus", dica: "Transporte público coletivo grande." },
+        { pergunta: "Qual o plural irregular de 'Mouse' (camundongo)?", opcoes: ["Mouses", "Mice", "Mices", "Mousen"], correta: "Mice", dica: "Plural irregular completo; vira outra palavra curta." }
+    ];
+
+    let perguntasSessao = [];
+    let indiceAtual = 0;
+    let pontuacao = 0;
+    let dicasRestantes = 3;
+    
+    let tempoInicio;
+    let intervaloTimer;
+    const TOTAL_QUESTOES_SESSAO = 10;
+
+    const questionText = document.getElementById('question-text');
+    const optionsBox = document.getElementById('options-box');
+    const hintBox = document.getElementById('hint-box');
+    const hintBtn = document.getElementById('hint-btn');
+    const scoreText = document.getElementById('score-text');
+    const progressText = document.getElementById('progress-text');
+    const timerText = document.getElementById('timer-text');
+    const bgMusic = document.getElementById('bg-music');
+    const audioSource = document.getElementById('audio-source');
+
+    function embaralhar(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function iniciarMusica() {
+        bgMusic.play().catch(() => {
+            document.addEventListener('click', () => {
+                bgMusic.play();
+            }, { once: true });
+        });
+    }
+
+    function mudarMusicaEspecifica(urlMusica) {
+        bgMusic.pause();
+        audioSource.src = urlMusica;
+        bgMusic.load();
+        bgMusic.play().catch(err => console.log("Aguardando clique do usuário para áudio."));
+    }
+
+    function inicializarSessao() {
+        iniciarMusica();
+        
+        let todasEmbaralhadas = embaralhar([...bancoPerguntas]);
+        perguntasSessao = todasEmbaralhadas.slice(0, TOTAL_QUESTOES_SESSAO);
+        
+        indiceAtual = 0;
+        pontuacao = 0;
+        dicasRestantes = 3;
+        
+        scoreText.innerText = `Pontuação: 0`;
+        hintBtn.innerText = `💡 Precisa de uma dica? (Restam 3)`;
+        hintBtn.disabled = false;
+        
+        tempoInicio = Date.now();
+        clearInterval(intervaloTimer);
+        intervaloTimer = setInterval(atualizarTimer, 1000);
+
+        loadQuestion();
+    }
+
+    function atualizarTimer() {
+        let tempoDecorrido = Math.floor((Date.now() - tempoInicio) / 1000);
+        let minutos = Math.floor(tempoDecorrido / 60).toString().padStart(2, '0');
+        let segundos = (tempoDecorrido % 60).toString().padStart(2, '0');
+        timerText.innerText = `Tempo: ${minutos}:${segundos}`;
+    }
+
+    function loadQuestion() {
+        hintBox.style.display = 'none'; 
+        
+        if (indiceAtual < perguntasSessao.length) {
+            const dados = perguntasSessao[indiceAtual];
+            questionText.innerHTML = `Questão ${indiceAtual + 1}:<br>${dados.pergunta}`;
+            hintBox.innerText = dados.dica;
+            optionsBox.innerHTML = '';
+            progressText.innerText = `Pergunta: ${indiceAtual + 1}/${TOTAL_QUESTOES_SESSAO}`;
+
+            const oEmbaralhadas = embaralhar([...dados.opcoes]);
+            oEmbaralhadas.forEach(opcao => {
+                const button = document.createElement('button');
+                button.innerText = opcao;
+                button.classList.add('btn-option');
+                button.onclick = () => checkAnswer(button, opcao, dados.correta);
+                optionsBox.appendChild(button);
+            });
+        } else {
+            showResults();
+        }
+    }
+
+    function checkAnswer(button, selected, correct) {
+        const buttons = optionsBox.querySelectorAll('.btn-option');
+        buttons.forEach(btn => btn.disabled = true);
+
+        if (selected === correct) {
+            button.classList.add('correct');
+            pontuacao++;
+            scoreText.innerText = `Pontuação: ${pontuacao}`;
+        } else {
+            button.classList.add('incorrect');
+            buttons.forEach(btn => {
+                if (btn.innerText === correct) btn.classList.add('correct');
+            });
+        }
+
+        setTimeout(() => {
+            indiceAtual++;
+            loadQuestion();
+        }, 1500);
+    }
+
+    function useHint() {
+        if (dicasRestantes > 0) {
+            if (hintBox.style.display === 'none' || hintBox.style.display === '') {
+                hintBox.style.display = 'block';
+                dicasRestantes--;
+                hintBtn.innerText = `💡 Precisa de uma dica? (Restam ${dicasRestantes})`;
+                if (dicasRestantes === 0) hintBtn.disabled = true;
+            }
+        }
+    }
+
+    function showResults() {
+        clearInterval(intervaloTimer); 
+        
+        let tempoFinal = Math.floor((Date.now() - tempoInicio) / 1000);
+        let minFinal = Math.floor(tempoFinal / 60);
+        let segFinal = tempoFinal % 60;
+        let tempoTexto = `${minFinal}min e ${segFinal}seg`;
+
+        const quizContainer = document.getElementById('quiz');
+        let feedback = "";
+        
+        if (pontuacao >= 8) feedback = "🏆 Excelente! Você dominou essa rodada!";
+        else if (pontuacao >= 5) feedback = "👍 Muito bom! Seu inglês está progredindo bem.";
+        else feedback = "📚 Treinar mais vai te ajudar! Vamos outra vez?";
+
+        quizContainer.innerHTML = `
+            <h2>🎉 Sessão Concluída!</h2>
+            <p>${feedback}</p>
+            <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0;">
+                <p style="margin: 5px 0;">🎯 <strong>Acertos:</strong> ${pontuacao} de ${TOTAL_QUESTOES_SESSAO} (${(pontuacao/TOTAL_QUESTOES_SESSAO)*100}%)</p>
+                <p style="margin: 5px 0;">⏱️ <strong>Tempo total:</strong> ${tempoTexto}</p>
+            </div>
+            <button class="btn-option" style="width:100%; border-color: var(--primary-color); background: var(--primary-color); color: white;" onclick="window.location.reload()">
+                Jogar Nova Sessão (Mais 10 Perguntas)
+            </button>
+        `;
+    }
+
+    inicializarSessao();
+</script>
+
+</body>
+</html>
